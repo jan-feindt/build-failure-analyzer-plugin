@@ -127,11 +127,18 @@ def displayCauses(cause, run, indent, links) {
                     text(cause.description)
                 }
                 br {}
-                cause.getIndications().each { indication ->
+                cause.getIndications().each {
+                  indication ->
+                if (indication.matchingFile.startsWith('http')) {
+                   a(href: indication.matchingFile
+                                , class: "model-link") {
+                            text(_("Test Indication") + " " + (index++))
+                }} else {
                         a(href: "${rootURL}/${links.buildUrl}" + "consoleFull#" + indication.matchingHash + cause.id
                                 , class: "model-link") {
-                            text(_("Indication") + " " + (index++))
+                            text(_("Console Indication") + " " + (index++))
                     }
+                }
                 }
                 br {}
             }

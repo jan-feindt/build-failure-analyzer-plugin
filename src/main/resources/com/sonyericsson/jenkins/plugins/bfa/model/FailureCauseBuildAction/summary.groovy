@@ -32,101 +32,117 @@ def l = namespace(lib.LayoutTagLib)
 index = 1
 
 tr {
-    td {
-        img(width: "48", height: "48", src: my.getImageUrl(), style: "margin-right:1em;")
-    }
-    td(style: "vertical-align: middle;") {
-        h2(_("Identified problems"))
-    }
+  td {
+    img(width: "48", height: "48", src: my.getImageUrl(), style: "margin-right:1em;")
+  }
+  td(style: "vertical-align: middle;") {
+    h2(_("Identified problems"))
+  }
 }
 
 displayData(my.getFailureCauseDisplayData(), [], 0)
 
 def displayData(failureCauseDisplayData, linkTree, indent) {
 
-    if (failureCauseDisplayData.getFoundFailureCauses().empty && failureCauseDisplayData.getDownstreamFailureCauses().empty) {
+  if (failureCauseDisplayData.getFoundFailureCauses().empty && failureCauseDisplayData.getDownstreamFailureCauses().empty) {
 
-        if (indent > 0) {
-            displayLinkTree(linkTree)
+    if (indent > 0) {
+      displayLinkTree(linkTree)
+    }
+
+    tr {
+      td {}
+      td {
+        h4(style: "margin-left: 10px;") {
+          text(_("No identified problem"))
         }
-
-        tr {
-            td {}
-            td {
-                h4(style: "margin-left: 10px;") {
-                    text(_("No identified problem"))
-                }
-                h4(style: "margin-left: 10px; font-weight: normal") {
-                    text(_(PluginImpl.getInstance().noCausesMessage))
-                }
-            }
+        h4(style: "margin-left: 10px; font-weight: normal") {
+          text(_(PluginImpl.getInstance().noCausesMessage))
         }
+      }
     }
+  }
 
 
-    if (!failureCauseDisplayData.getFoundFailureCauses().empty && indent > 0) {
-        displayLinkTree(linkTree)
-    }
+  if (!failureCauseDisplayData.getFoundFailureCauses().empty && indent > 0) {
+    displayLinkTree(linkTree)
+  }
 
-    failureCauseDisplayData.getFoundFailureCauses().each { cause ->
-        displayCauses(cause, indent, failureCauseDisplayData.links)
-    }
-    failureCauseDisplayData.getDownstreamFailureCauses().each { subFailureCauseDisplayData ->
-        linkTree.add(subFailureCauseDisplayData.links)
-        displayData(subFailureCauseDisplayData, linkTree, indent + 1)
-        linkTree.pop()
-    }
+  failureCauseDisplayData.getFoundFailureCauses().each { cause ->
+    displayCauses(cause, indent, failureCauseDisplayData.links)
+  }
+  failureCauseDisplayData.getDownstreamFailureCauses().each { subFailureCauseDisplayData ->
+    linkTree.add(subFailureCauseDisplayData.links)
+    displayData(subFailureCauseDisplayData, linkTree, indent + 1)
+    linkTree.pop()
+  }
 }
 
 def displayLinkTree(linkTree) {
-    tr {
-        td {}
-        td {
-            h3 {
-                text(_("Subproject build: "))
-                linkTree.eachWithIndex { link, i ->
-                    if (link?.buildUrl != null) {
-                        if (i > 0) {
-                            text(" / ")
-                        }
-                        a(href: "${rootURL}/${link.projectUrl}", class: "model-link") {
-                            text(link.projectDisplayName + " ")
-                        }
-                        text(" (")
-                        a(href: "${rootURL}/${link.buildUrl}", class: "model-link") {
-                            text(link.buildDisplayName)
-                        }
-                        text(") ")
-                    }
-                }
+  tr {
+    td {}
+    td {
+      h3 {
+        text(_("Subproject build: "))
+        linkTree.eachWithIndex { link, i ->
+          if (link?.buildUrl != null) {
+            if (i > 0) {
+              text(" / ")
             }
+            a(href: "${rootURL}/${link.projectUrl}", class: "model-link") {
+              text(link.projectDisplayName + " ")
+            }
+            text(" (")
+            a(href: "${rootURL}/${link.buildUrl}", class: "model-link") { text(link.buildDisplayName) }
+            text(") ")
+          }
         }
+      }
     }
+  }
 }
 
 def displayCauses(cause, indent, links) {
 
-    tr {
-        td {}
-        td {
-            h3(style: "margin-left: 20px;") {
-                text(cause.name)
-                br {}
-                br {}
-                b(style: "font-weight: normal") {
-                    raw(app.markupFormatter.translate(cause.description))
-                }
-                br {}
-                cause.getIndications().each { indication ->
-                    if (links?.buildUrl != null) {
-                        a(href: "${rootURL}/${links.buildUrl}" + "consoleFull#" + indication.matchingHash + cause.id
-                                , class: "model-link") {
-                            text(_("Indication") + " " + (index++))
-                        }
-                    }
-                }
-                br {}
-            }
-        }
+  tr {
+    td {
+
     }
+    td {
+      h3(style: "margin-left: 20px;") {
+        text(cause.name)
+        br {
+
+        }
+        br {
+
+        }
+        b(style: "font-weight: normal") {
+          raw(app.markupFormatter.translate(cause.description))
+        }
+        br {
+
+        }
+        cause.getIndications().each {
+          indication ->
+          if (indication.matchingFile.startsWith('http')) {
+            a(href: indication.matchingFile
+            , class: "model-link") {
+              text(_("Test Indication") + " " + (index++))
+            }
+          } else {
+            if (links?.buildUrl != null) {
+              a(href: "${rootURL}/${links.buildUrl}" + "consoleFull#" + indication.matchingHash + cause.id
+              , class: "model-link") {
+                text(_("Console Indication") + " " + (index++))
+              }
+            }
+          }
+        }
+        br {
+
+        }
+      }
+    }
+  }
 }
