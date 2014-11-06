@@ -138,6 +138,7 @@ def displayCauses(cause, indent, links) {
               }
             }
           }
+          text(" ")
         }
         br {
 

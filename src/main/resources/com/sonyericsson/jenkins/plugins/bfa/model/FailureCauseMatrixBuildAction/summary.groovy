@@ -139,6 +139,7 @@ def displayCauses(cause, run, indent, links) {
                             text(_("Console Indication") + " " + (index++))
                     }
                 }
+                text(" ")
                 }
                 br {}
             }
