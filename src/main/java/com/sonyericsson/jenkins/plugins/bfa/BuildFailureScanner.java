@@ -97,7 +97,6 @@ public class BuildFailureScanner extends RunListener<AbstractBuild> {
    * @param buildLog log to write information to
    */
   public static void scanIfNotScanned(final AbstractBuild build, final PrintStream buildLog) {
-    // FIXME: support rescan of build and change of consoleLog ????
     if (PluginImpl.shouldScan(build)
         && !(build.getProject() instanceof MatrixProject)) {
 
